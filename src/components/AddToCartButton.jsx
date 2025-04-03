@@ -1,43 +1,31 @@
 import  { useEffect, useState } from 'react'
 import { useDispatch,useSelector } from "react-redux";
 import { handleAddItemCart,updateItemCart } from "../store/cartSlice.js";
-//import { useGlobalContext } from '../provider/GlobalProvider'
-//import Axios from '../utils/Axios'
-//import SummaryApi from '../common/SummaryApi'
-//import toast from 'react-hot-toast'
-//import AxiosToastError from '../utils/AxiosToastError'
-//import Loading from './Loading'
-
 import { FaMinus, FaPlus } from "react-icons/fa6";
+//import { datalist } from 'framer-motion/client';
 
 const AddToCartButton = ({ data }) => {
     const dispatch=useDispatch();
     const cartData=useSelector(state=>state.cartItem.cart)
     const products=useSelector(state=>state.product.products);
-    //const [loading, setLoading] = useState(false)    
-    const [isAvailableCart, setIsAvailableCart] = useState(false)
-    const [qty, setQty] = useState(0)
-    const [cartItemDetails,setCartItemsDetails] = useState()
-
-    const product=products.find(item=>item.id==data.productID);
+    const [isAvailableCart, setIsAvailableCart] = useState(false);
+    const [qty, setQty] = useState(0);
+    const [cartItemDetails,setCartItemsDetails] = useState();
+    const [product,setProduct]=useState({
+        id:"",
+        name:"",
+        outletId:""
+    });
+    
 
     const handleAddToCart = async (e) => {
         e.preventDefault()
         e.stopPropagation()
 
         try {
-            //setLoading(true)
-
-            dispatch(handleAddItemCart(data.productID))
-
-            /*const { data: responseData } = response
-
-            if (responseData.success) {
-                toast.success(responseData.message)
-                if (fetchCartItem) {
-                    fetchCartItem()
-                }
-            }*/
+            const outletId=product.outletId;
+            const productId=data.productId;
+            dispatch(handleAddItemCart(productId,outletId))
         } catch (error) {
             console.log(error)
         } 
@@ -45,29 +33,38 @@ const AddToCartButton = ({ data }) => {
 
 
     //checking this item in cart or not
-    useEffect(() => {
-        const checkingitem = cartData.some(item => item.productId === data.productID)
-        setIsAvailableCart(checkingitem)
-
-        const product = cartData.find(item => item.productId === data.productID)
-        setQty(product?.quantity)
-        setCartItemsDetails(product)
-    }, [data, cartData])
-
+    
 
     const increaseQty = (e) => {
         e.preventDefault()
         e.stopPropagation()
     
-       dispatch(handleAddItemCart(cartItemDetails?.productID,product.outletID))   
+       dispatch(handleAddItemCart(cartItemDetails?.productId,product.outletId))   
        
     }
 
     const decreaseQty = (e) => {
         e.preventDefault()
         e.stopPropagation()       
-        dispatch(updateItemCart(cartItemDetails?.productID,qty-1))        
+        dispatch(updateItemCart(cartItemDetails?.productId,qty-1))        
     }
+
+    useEffect(() => {
+        const p=products.find(item=>item.id==data.productId);
+        setProduct({
+            id:p.id,
+            name:p.name,
+            outletId:p.outletId
+        })
+        console.log(`Add to cart button of ${p.outletId} and ${data.productId}`)
+        const checkingitem = cartData.some(item => item.productId === data.productId)
+        setIsAvailableCart(checkingitem)
+
+        const proDuct = cartData.find(item => item.productId === data.productId)
+        setQty(proDuct?.quantity)
+        setCartItemsDetails(proDuct)
+    }, [data, cartData])
+
 
     return (
         <div className='w-full max-w-[150px]'>

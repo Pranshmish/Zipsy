@@ -1,16 +1,22 @@
 import { DisplayPriceInRupees } from '../utils/DisplayPriceInRupees'
 import { Link } from 'react-router-dom'
+import { useEffect, useState } from 'react'
 import AddToCartButton from './AddToCartButton'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 
 const CardProduct = ({data}) => {
-    const url = `/product/${data.productId}`
+  const dispatch=useDispatch()
+  const allProductData=useSelector(state=>state.product.products)
+  const url = `/product/${data.productId}`
     //const [loading,setLoading] = useState(false)
-
-    const allProductData=useSelector(state=>state.product.products)
-    
-    const productData= allProductData.find(obj => obj.id === data.productId) || null;
+  const [productData,setProductData]=useState({})
   
+    
+  
+  useEffect(()=>{
+    const productData= allProductData.find(obj => obj.id === data.productId) || null;
+    setProductData(productData)
+  },[dispatch])
     
   
   return (

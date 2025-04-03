@@ -14,9 +14,6 @@ function App() {
   const location = useLocation()
   
   const productInfo=useSelector(state=>state.product.productInfo)
-  const productData=useSelector(state=>state.product.products)
-  const categoryData=useSelector(state=>state.product.allCategory)
-  const outletData=useSelector(state=>state.product.allOutlet)
 
   const fetchUserData = async(userId)=>{
     try {
@@ -106,8 +103,6 @@ const calculateBestsellerProducts=()=>{
  const fetchTrendingProducts=async()=>{
   try {
     const trendingProducts=await calculateTrendingProducts()
-    console.log("Trending Products Data fetched here !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!11")
-    console.log(trendingProducts);
     dispatch(setTrendingProducts(trendingProducts))
   } catch (error) {
     console.log("Error while pushing trendingProducts to store",error)
@@ -117,8 +112,6 @@ const calculateBestsellerProducts=()=>{
  const fetchBestsellerProduct=async()=>{
   try {
     const bestsellerProducts=await calculateBestsellerProducts()
-    console.log("BestsellerProducts Data fetched here !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!11")
-    console.log(bestsellerProducts);
     dispatch(setBestsellerProducts(bestsellerProducts))
   } catch (error) {
     console.log("Error while pushing bestsellerProducts to store",error)
@@ -143,6 +136,9 @@ const calculateBestsellerProducts=()=>{
     }  
     return null;
   };
+  
+  fetchTrendingProducts()    
+  fetchBestsellerProduct()
 
 
   useEffect(()=>{
@@ -155,15 +151,7 @@ const calculateBestsellerProducts=()=>{
     fetchCategoryData()
     fetchOutletData()    
     fetchProductData()    
-    fetchProductInfo()    
-    fetchTrendingProducts()    
-    fetchBestsellerProduct()
-  
-    console.log("Product data at redux store ::::------- ",productData)
-    console.log("Outlet data at redux store ::::------- ",outletData)
-    console.log("Category data at redux store ::::------- ",categoryData)
-    console.log("ProductInfo data at redux store ::::------- ",productInfo)
-
+    fetchProductInfo()   
   },[dispatch])
 
 

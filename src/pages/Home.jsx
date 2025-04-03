@@ -1,4 +1,5 @@
 import { useSelector } from 'react-redux'
+import { useEffect } from "react";
 import {/*Link,*/ useNavigate} from 'react-router-dom'
 import CardProduct from "../components/CardProduct";
 import CardLoading from "../components/CartLoading";
@@ -13,7 +14,10 @@ const Home = () => {
   const outletData = useSelector(state => state.product.allOutlet)
   const bestsellerProductData=useSelector(state=> state.product.bestsellerProducts )
   const trendingProductData=useSelector(state=> state.product.trendingProducts )
+  const productInfo=useSelector(state=>state.product.productInfo)
+  const productData=useSelector(state=>state.product.products)
   
+
   const loadingCardNumber=new Array(12).fill(null)
 
   const navigate = useNavigate()
@@ -28,6 +32,14 @@ const Home = () => {
     navigate(url)
   }
 
+  useEffect(()=>{
+    console.log("Product data at redux store ::::------- ",productData)
+    console.log("Outlet data at redux store ::::------- ",outletData)
+    console.log("Category data at redux store ::::------- ",categoryData)
+    console.log("ProductInfo data at redux store ::::------- ",productInfo)
+    console.log("Trending Product data at redux store ::::------- ",trendingProductData)
+    console.log("BestSeller Product data at redux store ::::------- ",bestsellerProductData)
+  })
 
   return (
     <>
@@ -141,7 +153,7 @@ const Home = () => {
                     })
                 }
                 {
-                  productInfoData.map((p, index) => {
+                  productInfoData && productInfoData.map((p, index) => {
                     return (
                       <CardProduct
                         data={p}
