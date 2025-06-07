@@ -1,6 +1,5 @@
 import { Outlet, useLocation } from 'react-router-dom'
 import './App.css'
-import Header from './components/Header'
 import Footer from './components/Footer'
 import { useEffect } from 'react';
 import { setUserDetails } from './store/userSlice';
@@ -49,10 +48,10 @@ function App() {
         console.log("Product Data fetched here !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!11")
         console.log(data);
         dispatch(setAllProducts(data)); 
-      });
-      
+      });     
+        
     } catch (error) {
-      console.log("Error while fetching productData at App.jsx :-  ",error)  
+      console.log("Error while fetchProductData at App.jsx :-  ",error)  
     }finally{
       dispatch(setLoadingProducts(false))
     }
@@ -63,13 +62,13 @@ function App() {
       dispatch(setLoadingOutlets(true))
 
       await database.getOutletData().then((data) => {
-        console.log("Outlet Data fetched here !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+        console.log("Outlet Data fetched here !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!11")
         console.log(data);
         dispatch(setAllOutlet(data)); 
-      });
-      
+      });     
+        
     } catch (error) {
-      console.log("Error while fetching outletData at App.jsx :-  ",error)  
+      console.log("Error while fetchOutletData at App.jsx :-  ",error)  
     }finally{
       dispatch(setLoadingOutlets(false))
     }
@@ -78,95 +77,86 @@ function App() {
   const fetchProductInfo=async()=>{
     try {
       await database.getProductInfo().then((data) => {
-        console.log("ProductInfo Data fetched here !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!11")
+        console.log("Product Info fetched here !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!11")
         console.log(data);
         dispatch(setAllProductInfo(data)); 
-      });
+      });     
+        
     } catch (error) {
-      console.log("Error while fetching productInfo at App.jsx :-  ",error)
+      console.log("Error while fetchProductInfo at App.jsx :-  ",error)  
     }
-  }  
+  }
 
-
- const calculateTrendingProducts=()=>{  
-    return productInfo
-        .sort((a, b) => b.todaySale - a.todaySale) // Sort descending
-        .slice(0, 10); // Take top 10
- }
-
-const calculateBestsellerProducts=()=>{  
-  return productInfo
-      .sort((a, b) => b.totalSale - a.totalSale) // Sort descending
-      .slice(0, 10); // Take top 10
-}
-
- const fetchTrendingProducts=async()=>{
-  try {
-    const trendingProducts=await calculateTrendingProducts()
+  const calculateTrendingProducts=()=>{  
+    const trendingProducts = productInfo?.filter(product => product.trending === true)
     dispatch(setTrendingProducts(trendingProducts))
-  } catch (error) {
-    console.log("Error while pushing trendingProducts to store",error)
   }
- }
 
- const fetchBestsellerProduct=async()=>{
-  try {
-    const bestsellerProducts=await calculateBestsellerProducts()
+  const calculateBestsellerProducts=()=>{  
+    const bestsellerProducts = productInfo?.filter(product => product.bestseller === true)
     dispatch(setBestsellerProducts(bestsellerProducts))
-  } catch (error) {
-    console.log("Error while pushing bestsellerProducts to store",error)
   }
- }
 
- const getDatafromLocalStorage = async () => {
-  const storedUser = localStorage.getItem("user");
-  const expiry = localStorage.getItem("expiry");
+  const fetchTrendingProducts=async()=>{
+    try {
+      await database.getTrendingProducts().then((data) => {
+        console.log("Trending Products fetched here !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!11")
+        console.log(data);
+        dispatch(setTrendingProducts(data)); 
+      });     
+        
+    } catch (error) {
+      console.log("Error while fetchTrendingProducts at App.jsx :-  ",error)  
+    }
+  }
 
-  if (storedUser && expiry) {
-      const now = new Date();
-      const expiryDate = new Date(expiry);
+  const fetchBestsellerProduct=async()=>{
+    try {
+      await database.getBestsellerProducts().then((data) => {
+        console.log("Bestseller Products fetched here !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!11")
+        console.log(data);
+        dispatch(setBestsellerProducts(data)); 
+      });     
+        
+    } catch (error) {
+      console.log("Error while fetchBestsellerProduct at App.jsx :-  ",error)  
+    }
+  }
 
-      if (now < expiryDate) {
-        console.log("User session valid. Auto-logging in...");
-        console.log("User found in local storage  !!!!!!!!!!!!!!!!!!!!!! ")
-        return JSON.parse(storedUser);
-      } else {      
-        return null;
+  const getDatafromLocalStorage = async () => {
+    try {
+      const userData = localStorage.getItem("userData")
+      if (userData) {
+        const parsedUserData = JSON.parse(userData)
+        dispatch(setUserDetails(parsedUserData))
+        await fetchUserData(parsedUserData.id)
       }
-    }  
-    return null;
-  };
-  
-  fetchTrendingProducts()    
-  fetchBestsellerProduct()
+    } catch (error) {
+      console.log("Error while getDatafromLocalStorage at App.jsx :-  ",error)  
+    }
+  }
 
+  useEffect(() => {
+    getDatafromLocalStorage()
+  }, [])
 
-  useEffect(()=>{
-    console.log("App component is loading !!!!!!!!! ")
-
-    const userData=getDatafromLocalStorage()
-    userData.id ? fetchUserData(userData.id) : console.log("No userData in local storage !!!!")
-    userData.id && console.log(`user with ${userData.id} fetched !!!!!!!!!!!!!!!!!!!!!!!!!!!!!`)  
-
+  useEffect(() => {
     fetchCategoryData()
     fetchOutletData()    
     fetchProductData()    
     fetchProductInfo()   
   },[dispatch])
 
+  // Check if we should show the cart mobile link
+  const shouldShowCartLink = location.pathname !== '/checkout' && location.pathname !== '/cart';
 
   return (
     <> 
-      <Header/>
       <main className='min-h-[78vh]'>
           <Outlet/>
       </main>
       <Footer/>
-      {
-        location.pathname !== '/checkout' || location.pathname !== '/cart'  && (
-          <CartMobileLink/>
-        )
-      }
+      {shouldShowCartLink && <CartMobileLink/>}
     </>
   )
 }
