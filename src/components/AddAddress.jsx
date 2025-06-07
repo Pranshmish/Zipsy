@@ -6,18 +6,15 @@ import { useState } from "react";
 
 const AddAddress = ({ close }) => {
     const { register, handleSubmit, reset } = useForm();
-    //const { fetchAddress } = useGlobalContext();
     const dispatch = useDispatch();
     const [loading, setLoading] = useState(false); // Track loading state
 
     const onSubmit = async (data) => {
-        console.log("Selected Address:", data.address);
         setLoading(true);
-
         try {
-            await dispatch(handleAddAddress(data)).unwrap(); // Ensure Redux action completes
+            // The data object will now contain all the new fields
+            await dispatch(handleAddAddress(data)).unwrap();
             reset();
-            //fetchAddress();
             close();
         } catch (error) {
             console.error("Failed to add address:", error);
@@ -36,24 +33,63 @@ const AddAddress = ({ close }) => {
                     </button>
                 </div>
                 <form className="mt-4 grid gap-4" onSubmit={handleSubmit(onSubmit)}>
-                    {/* Dropdown for Address Selection */}
-                    <div className="grid gap-1">
-                        <label htmlFor="address">Select Address:</label>
-                        <select
-                            id="address"
-                            className="border bg-blue-50 p-2 rounded"
-                            {...register("address", { required: true })}
-                        >
-                            <option value="">Select an Address</option>
-                            <option value="V.S Hostel">V.S Hostel</option>
-                            <option value="Tagore Hostel">Tagore Hostel</option>
-                            <option value="MPH">MPH</option>
-                            <option value="Tilak Hostel">Tilak Hostel</option>
-                        </select>
+                    <div className='grid gap-1'>
+                        <label htmlFor='address_line'>Address Line:</label>
+                        <input
+                            type='text'
+                            id='address_line'
+                            className='border bg-blue-50 p-2 rounded'
+                            {...register("address_line",{required : true})}
+                        />
+                    </div>
+                    <div className='grid gap-1'>
+                        <label htmlFor='city'>City:</label>
+                        <input
+                            type='text'
+                            id='city'
+                            className='border bg-blue-50 p-2 rounded'
+                            {...register("city",{required : true})}
+                        />
+                    </div>
+                    <div className='grid gap-1'>
+                        <label htmlFor='state'>State:</label>
+                        <input
+                            type='text'
+                            id='state'
+                            className='border bg-blue-50 p-2 rounded'
+                            {...register("state",{required : true})}
+                        />
+                    </div>
+                    <div className='grid gap-1'>
+                        <label htmlFor='pincode'>Pincode:</label>
+                        <input
+                            type='text'
+                            id='pincode'
+                            className='border bg-blue-50 p-2 rounded'
+                            {...register("pincode",{required : true})}
+                        />
+                    </div>
+                    <div className='grid gap-1'>
+                        <label htmlFor='country'>Country:</label>
+                        <input
+                            type='text'
+                            id='country'
+                            className='border bg-blue-50 p-2 rounded'
+                            {...register("country",{required : true})}
+                        />
+                    </div>
+                    <div className='grid gap-1'>
+                        <label htmlFor='mobile'>Mobile No.:</label>
+                        <input
+                            type='tel'
+                            id='mobile'
+                            className='border bg-blue-50 p-2 rounded'
+                            {...register("mobile",{required : true})}
+                        />
                     </div>
 
-                    <button 
-                        type="submit" 
+                    <button
+                        type="submit"
                         className="bg-primary-200 w-full py-2 font-semibold mt-4 hover:bg-primary-100 disabled:opacity-50"
                         disabled={loading}
                     >
